@@ -46,25 +46,14 @@ export const useResources = () => {
   const [downloadCounts, setDownloadCounts] = useState<Record<number, number>>({});
   const [lastAction, setLastAction] = useState<string>('');
   const [loadedFonts, setLoadedFonts] = useState<string[]>([]);
-  const [hasMore, setHasMore] = useState(true);
-  const RESOURCES_PER_PAGE = 20;
+  // Pagination removed: fetch all resources at once
 
-  const fetchResources = useCallback(async (isNewSearch = false, pageToFetch = 0) => {
+  const fetchResources = useCallback(async () => {
     try {
       setIsLoading(true);
-
-      if (!hasMore && !isNewSearch) {
-        setIsLoading(false);
-        return;
-      }
-
-      const from = isNewSearch ? 0 : pageToFetch * RESOURCES_PER_PAGE;
-      const to = from + RESOURCES_PER_PAGE - 1;
-
       let query = supabase
         .from('resources')
-        .select('*', { count: 'exact' })
-        .range(from, to);
+        .select('*', { count: 'exact' });
 
       if (searchQuery) {
         query = query.ilike('title', `%${searchQuery}%`);
@@ -99,7 +88,7 @@ export const useResources = () => {
           break;
       }
 
-      const { data, error, count } = await query;
+      const { data, error } = await query;
 
       if (error) {
         console.error('Supabase error:', error);
@@ -111,52 +100,20 @@ export const useResources = () => {
         downloads: 0 // Set all resources to have 0 downloads by default
       }));
       
-      // Merge new resources with previous ones while ensuring uniqueness by `id`
-      setResources(prevResources => {
-        if (isNewSearch) {
-          return newResources;
-        }
-        const combined = [...prevResources, ...newResources];
-        const seenIds = new Set<number>();
-        return combined.filter(res => {
-          if (seenIds.has(res.id)) return false;
-          seenIds.add(res.id);
-          return true;
-        });
-      });
-
-      if (count !== null) {
-        const totalLoaded = isNewSearch ? newResources.length : (pageToFetch + 1) * RESOURCES_PER_PAGE;
-        setHasMore(count > totalLoaded);
-      } else {
-        setHasMore(newResources.length === RESOURCES_PER_PAGE);
-      }
+      // Set full result set
+      setResources(newResources);
 
     } catch (error) {
       console.error('Error fetching resources:', error);
     } finally {
       setIsLoading(false);
     }
-  }, [hasMore, searchQuery, selectedCategory, selectedSubcategory, sortOrder]);
-
-  // Track current page for load more functionality
-  const [currentPage, setCurrentPage] = useState(0);
+  }, [searchQuery, selectedCategory, selectedSubcategory, sortOrder]);
 
   // Initial load and filter changes
   useEffect(() => {
-    setCurrentPage(0);
-    setHasMore(true);
-    fetchResources(true, 0);
+    fetchResources();
   }, [searchQuery, selectedCategory, selectedSubcategory, sortOrder, fetchResources]);
-  
-  // Stable load more function that prevents race conditions
-  const loadMoreResources = useCallback(() => {
-    if (isLoading || !hasMore) return;
-    
-    const nextPage = currentPage + 1;
-    setCurrentPage(nextPage);
-    fetchResources(false, nextPage);
-  }, [isLoading, hasMore, currentPage, fetchResources]);
 
 
   const handleSearchSubmit = useCallback((e?: React.FormEvent) => {
@@ -164,7 +121,6 @@ export const useResources = () => {
     setIsLoading(true);
     setIsSearching(true);
     setLastAction('search');
-    setTimeout(() => setIsLoading(false), 300);
   }, []);
 
   const handleClearSearch = useCallback(() => {
@@ -181,20 +137,17 @@ export const useResources = () => {
       setSelectedSubcategory(null);
     }
     setLastAction('category');
-    setTimeout(() => setIsLoading(false), 300);
   }, []);
 
   const handleSubcategoryChange = useCallback((subcategory: Subcategory | 'all' | null) => {
     setIsLoading(true);
     setSelectedSubcategory(subcategory);
     setLastAction('subcategory');
-    setTimeout(() => setIsLoading(false), 300);
   }, []);
 
   const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
     setLastAction('search');
-    
     if (e.target.value === '') {
       setIsSearching(false);
     } else {
@@ -302,7 +255,5 @@ export const useResources = () => {
     handleSortOrderChange: setSortOrder,
     handleSearch,
     handleDownload,
-    loadMoreResources,
-    hasMore,
   };
 };

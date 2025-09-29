@@ -10,9 +10,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 import { useAuth } from '@/hooks/useAuth';
 import { LogOut, Heart, User, Settings } from 'lucide-react';
+import { useProfile } from '@/hooks/useProfile';
 
 interface UserMenuProps {
   onShowFavorites: () => void;
@@ -20,12 +22,59 @@ interface UserMenuProps {
 
 const UserMenu = ({ onShowFavorites }: UserMenuProps) => {
   const { user, signOut } = useAuth();
+  const { profile } = useProfile();
 
   if (!user) return null;
 
-  const getInitials = (email: string) => {
-    return email.split('@')[0].slice(0, 2).toUpperCase();
+  const getInitials = (display: string) => {
+    if (!display) return 'U';
+    return display.split(' ').join('').slice(0, 2).toUpperCase();
   };
+
+  // Narrow user metadata shape to avoid any
+  const meta = (user.user_metadata ?? {}) as {
+    avatar_url?: string;
+    picture?: string;
+    display_name?: string;
+  };
+  const identities = (user.identities ?? []) as Array<{
+    identity_data?: Record<string, unknown> | null;
+    provider?: string | null;
+  }>;
+
+  // Extract possible URLs from identities (GitHub/Discord sometimes store here)
+  const identityAvatar = identities
+    .map((i) => (i.identity_data || {}))
+    .map((d) => (d?.avatar_url as string) || (d?.picture as string) || (d?.avatar as string) || '')
+    .find((u) => !!u);
+
+  const displayName = (profile?.display_name as string | undefined) || meta.display_name || user.email || '';
+
+  // Validate URL is http/https or data: to avoid trying to load invalid strings like CIDs or tokens
+  const toSafeHttpUrl = (url?: string | null) => {
+    if (!url) return undefined;
+    try {
+      const u = new URL(url);
+      if (u.protocol === 'http:' || u.protocol === 'https:' || u.protocol === 'data:') return u.toString();
+      return undefined;
+    } catch {
+      return undefined;
+    }
+  };
+
+  // Choose the first safe candidate among profile, metadata, identities
+  const candidates = [profile?.avatar_url, meta.avatar_url, meta.picture, identityAvatar].filter(Boolean) as string[];
+  const safeAvatarUrl = candidates.map(toSafeHttpUrl).find((u) => !!u);
+  if (process.env.NODE_ENV !== 'production') {
+    console.debug('[UserMenu] avatar candidates', {
+      profileAvatar: profile?.avatar_url,
+      metaAvatar: meta.avatar_url,
+      metaPicture: meta.picture,
+      identityAvatar,
+      chosen: safeAvatarUrl,
+      displayName,
+    });
+  }
 
   return (
     <DropdownMenu>
@@ -36,8 +85,9 @@ const UserMenu = ({ onShowFavorites }: UserMenuProps) => {
             whileTap={{ scale: 0.95 }}
           >
             <Avatar className="h-8 w-8">
+              {safeAvatarUrl && <AvatarImage src={safeAvatarUrl} alt="User avatar" referrerPolicy="no-referrer" />}
               <AvatarFallback className="bg-cow-purple text-white text-xs">
-                {getInitials(user.email || '')}
+                {getInitials(displayName)}
               </AvatarFallback>
             </Avatar>
           </motion.div>

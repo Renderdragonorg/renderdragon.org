@@ -3,8 +3,6 @@ import { Resource } from '@/types/resources';
 import ResourceCard from './ResourceCard';
 import { FolderX, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useUserFavorites } from '@/hooks/useUserFavorites';
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import ResourceCardSkeleton from './ResourceCardSkeleton';
 
@@ -18,8 +16,6 @@ interface ResourcesListProps {
   onSelectResource: (resource: Resource) => void;
   onClearFilters: () => void;
   hasCategoryResources: boolean;
-  loadMoreResources: () => void;
-  hasMore: boolean;
   filteredResources: Resource[];
 }
 
@@ -33,8 +29,6 @@ const ResourcesList = ({
   onSelectResource,
   onClearFilters,
   hasCategoryResources,
-  loadMoreResources,
-  hasMore,
   filteredResources,
 }: ResourcesListProps) => {
   if (isLoading && resources.length === 0) {
@@ -48,14 +42,13 @@ const ResourcesList = ({
   }
 
   const shouldShowNoResourcesMessage =
-    (filteredResources.length === 0 && !isLoading) ||
-    (selectedCategory && selectedCategory !== 'favorites' && !hasCategoryResources);
+    (!isLoading && filteredResources.length === 0) ||
+    (!isLoading && selectedCategory && selectedCategory !== 'favorites' && !hasCategoryResources);
 
   if (shouldShowNoResourcesMessage) {
     return (
       <motion.div 
         className="text-center py-16 space-y-6"
-        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
@@ -152,13 +145,6 @@ const ResourcesList = ({
           ))
         )}
       </motion.div>
-      {hasMore && (
-        <div className="flex justify-center mt-8">
-          <Button onClick={loadMoreResources} disabled={isLoading}>
-            {isLoading ? 'Loading...' : 'Load More'}
-          </Button>
-        </div>
-      )}
     </motion.div>
   );
 };

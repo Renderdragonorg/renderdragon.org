@@ -3,89 +3,91 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DonateButton from '@/components/DonateButton';
 import { Download, AlertCircle, RefreshCcw, Youtube, Info } from 'lucide-react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet-async';
 import VideoInfoSkeleton from '@/components/skeletons/VideoInfoSkeleton';
 
-interface DownloadOption {
-  id: string;
-  label: string;
-  format: string;
-  quality: string;
-  size?: string;
-  hasVideo: boolean;
-  hasAudio: boolean;
-  isMuxed: boolean;
-  audioBitrate?: number;
+// API types from mediapye YouTube Video Inspector
+interface YoutubeThumbnail {
+  url: string;
+  width?: number;
+  height?: number;
 }
 
-interface VideoInfo {
+interface VideoStatistics {
+  viewCount?: number;
+  likeCount?: number;
+  commentCount?: number;
+}
+
+interface ChannelInfo {
+  id: string;
   title: string;
-  thumbnail: string;
-  duration: string;
-  author: string;
-  options: DownloadOption[];
+  description?: string;
+  thumbnails?: Record<string, YoutubeThumbnail>;
+  subscriberCount?: number;
+  videoCount?: number;
+}
+
+interface ApiVideo {
+  id: string;
+  url: string;
+  title: string;
+  description: string;
+  publishedAt: string; // ISO string
+  channelId: string;
+  channelTitle: string;
+  thumbnails: Record<string, YoutubeThumbnail>;
+  duration: string; // ISO 8601 duration
+  tags?: string[];
+  statistics?: VideoStatistics;
+  channel?: ChannelInfo;
 }
 
 const YouTubeDownloader: React.FC = () => {
   const [youtubeUrl, setYoutubeUrl] = useState('');
-  const [selectedOptionId, setSelectedOptionId] = useState('');
-  const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
+  const [video, setVideo] = useState<ApiVideo | null>(null);
   const [isLoadingInfo, setIsLoadingInfo] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
   const [urlError, setUrlError] = useState(false);
-  const [downloadType, setDownloadType] = useState<'video' | 'audio'>('video');
-  const [filteredOptions, setFilteredOptions] = useState<DownloadOption[]>([]);
   const [isDownloadingThumb, setIsDownloadingThumb] = useState(false);
+  const [showFullDesc, setShowFullDesc] = useState(false);
 
   const isValidYoutubeUrl = (url: string) => /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/.test(url);
 
   useEffect(() => {
-    if (!videoInfo) return;
-    let opts: DownloadOption[];
-    if (downloadType === 'video') {
-      const qualityOrder = ['1080p', '720p', '480p'];
-      const videoOptions = videoInfo.options.filter(o => o.hasVideo);
-      
-      opts = qualityOrder.map(quality => {
-        const allForQuality = videoOptions.filter(o => o.quality?.startsWith(quality));
-        if (!allForQuality.length) return null;
-
-        // Prefer a muxed version if available, otherwise take the first one.
-        return allForQuality.find(o => o.isMuxed) || allForQuality[0];
-      }).filter((opt): opt is DownloadOption => !!opt);
-
-    } else {
-      opts = videoInfo.options.filter(o => o.hasAudio && !o.hasVideo);
-    }
-    setFilteredOptions(opts);
-    setSelectedOptionId('');
-  }, [videoInfo, downloadType]);
+    // Reset displayed info when URL changes
+    setVideo(null);
+    setShowFullDesc(false);
+  }, [youtubeUrl]);
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setYoutubeUrl(value);
-    setUrlError(value.length > 0 && !isValidYoutubeUrl(value));
-    setVideoInfo(null);
+    const looksLikeId = /^[a-zA-Z0-9_-]{11}$/.test(value.trim());
+    setUrlError(value.length > 0 && !looksLikeId && !isValidYoutubeUrl(value));
+    setVideo(null);
   };
 
   const handleFetchInfo = async () => {
-    if (!youtubeUrl || !isValidYoutubeUrl(youtubeUrl)) {
-      toast.error('Please enter a valid YouTube URL');
+    if (!youtubeUrl) {
+      toast.error('Please enter a YouTube URL or ID');
+      setUrlError(true);
+      return;
+    }
+
+    // Allow IDs as well; if not a full URL, don't validate URL pattern strictly
+    const looksLikeId = /^[a-zA-Z0-9_-]{11}$/.test(youtubeUrl.trim());
+    if (!looksLikeId && !isValidYoutubeUrl(youtubeUrl)) {
+      toast.error('Please enter a valid YouTube URL or 11-character video ID');
       setUrlError(true);
       return;
     }
 
     setIsLoadingInfo(true);
-    setVideoInfo(null);
-    setSelectedOptionId('');
+    setVideo(null);
     setUrlError(false);
 
     const MAX_RETRIES = 3;
@@ -96,7 +98,9 @@ const YouTubeDownloader: React.FC = () => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-        const res = await fetch(`/api/info?url=${encodeURIComponent(youtubeUrl)}`, {
+        const base = 'https://mediapye.vercel.app';
+        const url = `${base}/api/youtube?input=${encodeURIComponent(youtubeUrl.trim())}`;
+        const res = await fetch(url, {
           signal: controller.signal,
           headers: {
             'Content-Type': 'application/json',
@@ -104,8 +108,6 @@ const YouTubeDownloader: React.FC = () => {
         });
 
         clearTimeout(timeoutId);
-        const responseText = await res.text();
-
         if (!res.ok) {
           // Handle specific HTTP status codes
           if (res.status === 504) {
@@ -117,25 +119,18 @@ const YouTubeDownloader: React.FC = () => {
           } else if (res.status === 403) {
             throw new Error('Access denied - YouTube may be blocking requests. Please try again later.');
           }
-
-          // Try to parse error response
-          let errorMessage = responseText;
-          try {
-            const errorJson = JSON.parse(responseText);
-            errorMessage = errorJson.error || errorJson.message || responseText;
-          } catch (e) {
-            // If it's HTML (like the 504 error page), provide a user-friendly message
-            if (responseText.includes('<!DOCTYPE html>')) {
-              errorMessage = `Server error (${res.status}) - Please try again in a few minutes.`;
-            }
-          }
-          
-          throw new Error(errorMessage);
+          const errJson = await res.json().catch(() => ({}));
+          const message = (errJson as any)?.error || (errJson as any)?.message || `Request failed (${res.status})`;
+          throw new Error(message);
         }
 
-        const data = JSON.parse(responseText);
-        setVideoInfo(data);
+        const data = await res.json();
+        if (!data?.video) {
+          throw new Error('Unexpected response format');
+        }
+        setVideo(data.video as ApiVideo);
         toast.success('Video information loaded successfully!');
+        setIsLoadingInfo(false);
         return; // Success, exit retry loop
 
       } catch (err: unknown) {
@@ -193,70 +188,18 @@ const YouTubeDownloader: React.FC = () => {
   };
 
   const handleDownloadThumbnail = async () => {
-    if (!videoInfo) return;
+    if (!video) return;
     setIsDownloadingThumb(true);
     toast.info('Preparing thumbnail download...');
     
     try {
-      const title = encodeURIComponent(videoInfo.title);
-      const thumbnailUrl = encodeURIComponent(videoInfo.thumbnail);
-      const url = `/api/downloadThumbnail?url=${thumbnailUrl}&title=${title}`;
-      
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-
-      const res = await fetch(url, {
-        signal: controller.signal,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      clearTimeout(timeoutId);
-      
-      if (!res.ok) {
-        // Handle specific HTTP status codes
-        if (res.status === 504) {
-          throw new Error('Thumbnail download timeout - The server is taking too long to process your request. Please try again.');
-        } else if (res.status === 503) {
-          throw new Error('Service unavailable - The thumbnail service is temporarily overloaded. Please try again later.');
-        } else if (res.status === 404) {
-          throw new Error('Thumbnail not found - The video thumbnail may not be available.');
-        } else if (res.status === 403) {
-          throw new Error('Access denied - The thumbnail may be restricted. Please try again later.');
-        }
-
-        // Try to parse error response
-        let errorMessage = `Thumbnail download failed (${res.status})`;
-        try {
-          const errJson = await res.json();
-          errorMessage = errJson.error || errJson.message || errorMessage;
-        } catch (e) {
-          errorMessage = `Thumbnail download failed: ${res.statusText}`;
-        }
-        
-        throw new Error(errorMessage);
-      }
-
-      const blob = await res.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
+      const thumbUrl = getBestThumbnailUrl(video.thumbnails);
       const a = document.createElement('a');
-      a.href = blobUrl;
-
-      const contentDisposition = res.headers.get('content-disposition');
-      let downloadFilename = `${videoInfo.title}_thumbnail.jpg`; // default
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename="(.+?)"/);
-        if (filenameMatch && filenameMatch.length > 1) {
-          downloadFilename = filenameMatch[1];
-        }
-      }
-      a.download = downloadFilename;
-      
+      a.href = thumbUrl;
+      a.download = `${video.title}_thumbnail.jpg`;
       document.body.appendChild(a);
       a.click();
       a.remove();
-      window.URL.revokeObjectURL(blobUrl);
       toast.success('Thumbnail download started!');
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -275,151 +218,38 @@ const YouTubeDownloader: React.FC = () => {
       setIsDownloadingThumb(false);
     }
   };
-
-  const handleDownload = async () => {
-    if (!videoInfo || !selectedOptionId) {
-      toast.error('Please select a format first');
-      return;
+  
+  const getBestThumbnailUrl = (thumbs: Record<string, YoutubeThumbnail>): string => {
+    const order = ['maxres', 'standard', 'high', 'medium', 'default'];
+    for (const k of order) {
+      if (thumbs?.[k]?.url) return thumbs[k].url;
     }
+    // fallback: first available
+    const any = Object.values(thumbs || {})[0];
+    return any?.url || '';
+  };
 
-    const selectedOption = videoInfo.options.find(o => o.id === selectedOptionId);
-    if (!selectedOption) {
-      toast.error('Selected format not found');
-      return;
-    }
-
-    setIsDownloading(true);
-    toast.info('Preparing download...', { duration: 5000 });
-
-    const MAX_RETRIES = 2;
-    const RETRY_DELAY = 3000;
-
-    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-      try {
-        const title = encodeURIComponent(videoInfo.title);
-        let url = `/api/download?url=${encodeURIComponent(youtubeUrl)}&itag=${selectedOptionId}&title=${title}`;
-        
-        if (selectedOption.hasVideo && !selectedOption.isMuxed) {
-          const audioOptions = videoInfo.options.filter(o => o.hasAudio && !o.hasVideo);
-          if (audioOptions.length > 0) {
-            audioOptions.sort((a, b) => (b.audioBitrate || 0) - (a.audioBitrate || 0));
-            const bestAudio = audioOptions[0];
-            url += `&audioItag=${bestAudio.id}`;
-          }
-        }
-
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout for downloads
-
-        const res = await fetch(url, {
-          signal: controller.signal,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        clearTimeout(timeoutId);
-        
-        if (!res.ok) {
-          // Handle specific HTTP status codes
-          if (res.status === 504) {
-            throw new Error('Download timeout - The server is taking too long to process your request. Please try again.');
-          } else if (res.status === 503) {
-            throw new Error('Service unavailable - The download service is temporarily overloaded. Please try again later.');
-          } else if (res.status === 429) {
-            throw new Error('Rate limit exceeded - Please wait a moment before trying to download again.');
-          } else if (res.status === 403) {
-            throw new Error('Access denied - YouTube may be blocking download requests. Please try again later.');
-          }
-
-          // Try to parse error response
-          let errorMessage = `Download failed (${res.status})`;
-          try {
-            const errJson = await res.json();
-            errorMessage = errJson.error || errJson.message || errorMessage;
-          } catch (e) {
-            // If parsing fails, use the status text
-            errorMessage = `Download failed: ${res.statusText}`;
-          }
-          
-          throw new Error(errorMessage);
-        }
-
-        const blob = await res.blob();
-        const blobUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = `${videoInfo.title}.mp4`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(blobUrl);
-        toast.success('Download started!', { description: `Downloading ${selectedOption.label}` });
-        
-        setIsDownloading(false);
-        return; // Success, exit retry loop
-
-      } catch (err: unknown) {
-        console.error(`Download attempt ${attempt} failed:`, err);
-
-        if (err instanceof Error) {
-          // Handle AbortError (timeout)
-          if (err.name === 'AbortError') {
-            const timeoutMsg = 'Download timed out - The server is taking too long to process your request.';
-            
-            if (attempt === MAX_RETRIES) {
-              toast.error(timeoutMsg);
-              break;
-            } else {
-              toast.warning(`${timeoutMsg} Retrying... (${attempt}/${MAX_RETRIES})`);
-            }
-          } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
-            // Network errors
-            const networkMsg = 'Network error during download - Please check your internet connection.';
-            
-            if (attempt === MAX_RETRIES) {
-              toast.error(networkMsg);
-              break;
-            } else {
-              toast.warning(`${networkMsg} Retrying... (${attempt}/${MAX_RETRIES})`);
-            }
-          } else {
-            // Other errors
-            if (attempt === MAX_RETRIES) {
-              toast.error(`Download failed: ${err.message}`);
-              break;
-            } else {
-              toast.warning(`Download attempt ${attempt} failed: ${err.message}. Retrying...`);
-            }
-          }
-        } else {
-          const genericMsg = 'An unexpected error occurred during download.';
-          
-          if (attempt === MAX_RETRIES) {
-            toast.error(genericMsg);
-            break;
-          } else {
-            toast.warning(`${genericMsg} Retrying... (${attempt}/${MAX_RETRIES})`);
-          }
-        }
-
-        // Wait before retrying (except on the last attempt)
-        if (attempt < MAX_RETRIES) {
-          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * attempt));
-        }
-      }
-    }
-
-    setIsDownloading(false);
+  const humanizeDuration = (iso: string): string => {
+    // Simple ISO 8601 duration parser for PT#H#M#S
+    const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+    if (!m) return iso;
+    const h = m[1] ? parseInt(m[1], 10) : 0;
+    const min = m[2] ? parseInt(m[2], 10) : 0;
+    const s = m[3] ? parseInt(m[3], 10) : 0;
+    const parts: string[] = [];
+    if (h) parts.push(`${h}h`);
+    if (min) parts.push(`${min}m`);
+    if (s || parts.length === 0) parts.push(`${s}s`);
+    return parts.join(' ');
   };
 
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
-        <title>YouTube Downloader - Renderdragon</title>
+        <title>Youtube Tools - Renderdragon</title>
         <meta
           name="description"
-          content="Download YouTube videos for fair use and educational purposes. Our tool helps Minecraft content creators learn from and reference other creators' work."
+          content="Inspect YouTube video details for fair use and educational purposes. View channel, stats, duration, and thumbnail with quick download."
         />
       </Helmet>
       <Navbar />
@@ -428,11 +258,11 @@ const YouTubeDownloader: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-vt323 mb-8 text-center">
-              <span className="text-cow-purple">YouTube</span> Downloader
+              <span className="text-cow-purple">Youtube</span> Tools
             </h1>
 
             <p className="text-center text-muted-foreground mb-8 max-w-xl mx-auto">
-              Download YouTube videos and thumbnails for content creation purposes. Always respect copyright laws and only download videos
+              Inspect YouTube videos and download thumbnails for content creation purposes. Always respect copyright laws and only use content
               you have permission to use.
             </p>
 
@@ -448,7 +278,7 @@ const YouTubeDownloader: React.FC = () => {
             <div className="pixel-card mb-8">
               <div className="flex flex-col md:flex-row gap-4">
                 <Input
-                  placeholder="Paste YouTube URL here"
+                  placeholder="Paste YouTube URL or ID here"
                   value={youtubeUrl}
                   onChange={handleUrlChange}
                   className={`pixel-corners flex-grow ${urlError ? 'border-red-500' : ''}`}
@@ -467,78 +297,43 @@ const YouTubeDownloader: React.FC = () => {
               </div>
               {urlError && (
                 <p className="text-red-500 text-xs mt-2 flex items-center">
-                  <AlertCircle className="h-3 w-3 mr-1" /> Please enter a valid YouTube URL
+                  <AlertCircle className="h-3 w-3 mr-1" /> Please enter a valid YouTube URL or 11-character ID
                 </p>
               )}
             </div>
 
             {isLoadingInfo && <VideoInfoSkeleton />}
 
-            {videoInfo && !isLoadingInfo && (
-              <Tabs defaultValue="download" className="w-full">
-                <TabsList className="pixel-card mb-4">
-                  <TabsTrigger value="download">Video / Audio</TabsTrigger>
-                  <TabsTrigger value="thumbnail">Thumbnail</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="download">
-                  <div className="pixel-card space-y-6">
-                    <div className="flex flex-col md:flex-row gap-6">
-                      <div className="w-full md:w-2/5">
-                        <img src={videoInfo.thumbnail} alt={videoInfo.title} className="rounded-md w-full h-auto" />
+            {video && !isLoadingInfo && (
+              <div className="pixel-card space-y-6">
+                <div className="flex flex-col md:flex-row gap-6">
+                  <div className="w-full md:w-2/5">
+                    <img src={getBestThumbnailUrl(video.thumbnails)} alt={video.title} className="rounded-md w-full h-auto" />
+                  </div>
+                  <div className="w-full md:w-3/5">
+                    <h2 className="text-xl font-vt323 mb-2">{video.title}</h2>
+                    <div className="flex flex-wrap gap-3 mb-4">
+                      <div className="bg-accent text-accent-foreground px-2 py-1 rounded-md text-xs flex items-center">
+                        <span className="mr-1">Duration:</span> {humanizeDuration(video.duration)}
                       </div>
-                      <div className="w-full md:w-3/5">
-                        <h2 className="text-xl font-vt323 mb-2">{videoInfo.title}</h2>
-                        <div className="flex flex-wrap gap-3 mb-4">
-                          <div className="bg-accent text-accent-foreground px-2 py-1 rounded-md text-xs flex items-center">
-                            <span className="mr-1">Duration:</span> {videoInfo.duration}
-                          </div>
-                          <div className="bg-accent text-accent-foreground px-2 py-1 rounded-md text-xs flex items-center">
-                            <span className="mr-1">Channel:</span> {videoInfo.author}
-                          </div>
+                      <div className="bg-accent text-accent-foreground px-2 py-1 rounded-md text-xs flex items-center">
+                        <span className="mr-1">Channel:</span> {video.channel?.title || video.channelTitle}
+                      </div>
+                      <div className="bg-accent text-accent-foreground px-2 py-1 rounded-md text-xs flex items-center">
+                        <span className="mr-1">Published:</span> {new Date(video.publishedAt).toLocaleDateString()}
+                      </div>
+                      {typeof video.statistics?.viewCount !== 'undefined' && (
+                        <div className="bg-accent text-accent-foreground px-2 py-1 rounded-md text-xs flex items-center">
+                          <span className="mr-1">Views:</span> {video.statistics.viewCount.toLocaleString()}
                         </div>
-                        
-                        <RadioGroup value={downloadType} onValueChange={v => setDownloadType(v as 'video' | 'audio')} className="flex gap-4 mb-4">
-                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="video" id="video" /> <Label htmlFor="video">Video</Label>
-                           </div>
-                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="audio" id="audio" /> <Label htmlFor="audio">Audio only</Label>
-                           </div>
-                         </RadioGroup>
-
-                        <Select value={selectedOptionId} onValueChange={setSelectedOptionId}>
-                          <SelectTrigger className="pixel-corners">
-                            <SelectValue placeholder="Select format & quality" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {filteredOptions.map((opt, index) => (
-                              <SelectItem key={`${opt.id}-${index}`} value={opt.id}>
-                                {opt.label} {opt.size && `(${opt.size})`}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      )}
+                      {typeof video.statistics?.likeCount !== 'undefined' && (
+                        <div className="bg-accent text-accent-foreground px-2 py-1 rounded-md text-xs flex items-center">
+                          <span className="mr-1">Likes:</span> {video.statistics.likeCount.toLocaleString()}
+                        </div>
+                      )}
                     </div>
 
-                    <Button onClick={handleDownload} disabled={!selectedOptionId || isDownloading} className="w-full pixel-btn-primary flex items-center justify-center">
-                      {isDownloading ? (
-                        <>
-                          <RefreshCcw className="h-5 w-5 mr-2 animate-spin" /> <span>Downloading...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Download className="h-5 w-5 mr-2" /> <span>Download {downloadType === 'video' ? 'Video' : 'Audio'}</span>
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="thumbnail">
-                  <div className="pixel-card space-y-6">
-                    <img src={videoInfo.thumbnail} alt={videoInfo.title} className="rounded-md w-full h-auto" />
                     <Button onClick={handleDownloadThumbnail} disabled={isDownloadingThumb} className="w-full pixel-btn-primary flex items-center justify-center">
                       {isDownloadingThumb ? (
                         <>
@@ -551,8 +346,63 @@ const YouTubeDownloader: React.FC = () => {
                       )}
                     </Button>
                   </div>
-                </TabsContent>
-              </Tabs>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="font-vt323 text-lg">Description</h3>
+                  <p className="text-sm text-muted-foreground whitespace-pre-line">
+                    {(() => {
+                      const desc = video.description || '';
+                      if (!desc) return 'No description available.';
+                      const half = Math.ceil(desc.length / 2);
+                      if (showFullDesc || desc.length <= half) return desc;
+                      return desc.slice(0, half) + '...';
+                    })()}
+                  </p>
+                  {video.description && video.description.length > 0 && (
+                    <Button variant="secondary" className="pixel-corners" onClick={() => setShowFullDesc(v => !v)}>
+                      {showFullDesc ? 'Show less' : 'Show more'}
+                    </Button>
+                  )}
+                </div>
+
+                {/* Tags */}
+                {video.tags && video.tags.length > 0 && (
+                  <div className="space-y-2">
+                    <h3 className="font-vt323 text-lg">Tags</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {video.tags.slice(0, 20).map((t) => (
+                        <span key={t} className="bg-accent text-accent-foreground px-2 py-1 rounded-md text-xs">{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Channel section */}
+                <div className="space-y-2">
+                  <h3 className="font-vt323 text-lg">Channel</h3>
+                  <div className="flex items-start gap-3">
+                    {video.channel?.thumbnails && (
+                      <img
+                        src={getBestThumbnailUrl(video.channel.thumbnails)}
+                        alt={video.channel.title}
+                        className="w-12 h-12 rounded"
+                      />
+                    )}
+                    <div className="space-y-1">
+                      <p className="text-sm"><span className="font-semibold">{video.channel?.title || video.channelTitle}</span></p>
+                      <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                        {typeof video.channel?.subscriberCount !== 'undefined' && (
+                          <span>Subscribers: {video.channel.subscriberCount.toLocaleString()}</span>
+                        )}
+                        {typeof video.channel?.videoCount !== 'undefined' && (
+                          <span>Videos: {video.channel.videoCount.toLocaleString()}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </div>

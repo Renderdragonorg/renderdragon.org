@@ -60,6 +60,78 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Keep profiles.avatar_url in sync with the latest auth metadata
+  useEffect(() => {
+    const syncAvatar = async () => {
+      if (!user) return;
+      const meta = (user.user_metadata as Record<string, unknown>) || {};
+      let avatarUrl: string | undefined = (meta.avatar_url as string | undefined) || (meta.picture as string | undefined);
+
+      // If not present in user_metadata, try to infer from identities (GitHub/Discord)
+      if (!avatarUrl) {
+        const identities = (user.identities ?? []) as Array<{
+          provider?: string | null;
+          identity_data?: Record<string, unknown> | null;
+        }>;
+        for (const ident of identities) {
+          const provider = (ident.provider || '').toLowerCase();
+          const data = ident.identity_data || {};
+          // GitHub commonly exposes avatar_url; if missing, construct from numeric id
+          if (!avatarUrl && provider === 'github') {
+            avatarUrl = (data.avatar_url as string | undefined) || (data.picture as string | undefined);
+            if (!avatarUrl) {
+              const ghId = (data.id as number | string | undefined)?.toString();
+              if (ghId) avatarUrl = `https://avatars.githubusercontent.com/u/${ghId}?v=4`;
+            }
+          }
+          // Discord may expose id + avatar hash; construct CDN URL if present
+          if (!avatarUrl && provider === 'discord') {
+            const discordId = data.id as string | undefined;
+            const avatarHash = data.avatar as string | undefined;
+            const discordDirect = (data.avatar_url as string | undefined) || (data.picture as string | undefined);
+            if (discordDirect) avatarUrl = discordDirect;
+            else if (discordId && avatarHash) {
+              avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${avatarHash}.png?size=128`;
+            }
+            else if (discordId && !avatarHash) {
+              // Use a neutral default embed avatar when no custom avatar
+              avatarUrl = `https://cdn.discordapp.com/embed/avatars/0.png`;
+            }
+          }
+        }
+      }
+
+      // Only attempt to store http/https/data URLs
+      const isSafeUrl = (url?: string) => {
+        if (!url) return false;
+        try {
+          const u = new URL(url);
+          return u.protocol === 'http:' || u.protocol === 'https:' || u.protocol === 'data:';
+        } catch {
+          return false;
+        }
+      };
+
+      if (!isSafeUrl(avatarUrl)) return;
+
+      try {
+        // Upsert to ensure row exists; set latest avatar_url
+        const { error } = await supabase
+          .from('profiles')
+          .upsert(
+            { id: user.id, email: user.email, avatar_url: avatarUrl },
+            { onConflict: 'id' }
+          );
+        if (error) console.warn('Avatar sync warning:', error.message);
+        else console.debug('Avatar synced to profiles:', avatarUrl);
+      } catch (e) {
+        console.warn('Avatar sync error:', e);
+      }
+    };
+
+    void syncAvatar();
+  }, [user]);
+
   // UPDATED signUp function
   const signUp = async (
     email: string,

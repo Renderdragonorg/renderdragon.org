@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,11 +18,29 @@ import AccountPageSkeleton from '@/components/skeletons/AccountPageSkeleton';
 
 const Account = () => {
   const { user, loading, signOut } = useAuth();
-  const { updateProfile } = useProfile();
+  const { updateProfile, profile } = useProfile();
+  const navigate = useNavigate();
   const [displayName, setDisplayName] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
+  const avatarSrc: string | undefined =
+    profile?.avatar_url ??
+    ((user?.user_metadata as Record<string, unknown> | undefined)?.avatar_url as string | undefined) ??
+    ((user?.user_metadata as Record<string, unknown> | undefined)?.picture as string | undefined);
+
+  // Ensure we only attempt to load valid http/https URLs to avoid 404 noise
+  const toSafeHttpUrl = (url?: string | null) => {
+    if (!url) return undefined;
+    try {
+      const u = new URL(url);
+      if (u.protocol === 'http:' || u.protocol === 'https:') return u.toString();
+      return undefined;
+    } catch {
+      return undefined;
+    }
+  };
+  const safeAvatarSrc = toSafeHttpUrl(avatarSrc);
 
   useEffect(() => {
     if (user) {
@@ -126,7 +144,7 @@ const Account = () => {
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-3">
                   <Avatar className="h-16 w-16">
-                    <AvatarImage src={user.user_metadata?.avatar_url} />
+                    {safeAvatarSrc ? <AvatarImage src={safeAvatarSrc} referrerPolicy="no-referrer" /> : null}
                     <AvatarFallback className="bg-cow-purple text-white font-bold text-lg">
                       {getInitials(displayName || user.email || 'U')}
                     </AvatarFallback>

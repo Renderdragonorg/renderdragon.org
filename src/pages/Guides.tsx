@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { BookOpen, X } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import DonateButton from '@/components/DonateButton';
 import { Helmet } from 'react-helmet-async';
-import ReactMarkdown from 'react-markdown';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import confetti from 'canvas-confetti';
+import { useNavigate } from 'react-router-dom';
+
 import GuideCardSkeleton from '@/components/skeletons/GuideCardSkeleton';
 
 interface Guide {
@@ -61,7 +60,7 @@ const Guides: Guide[] = [
     markdownUrl: '/guides/thingstoask.md'
   },
   {
-    id: 5,
+    id: 6,
     title: "How to find your voice",
     description: 'Learn how to find your voice and style in content creation.',
     category: 'content creation',
@@ -73,8 +72,7 @@ const Guides: Guide[] = [
 const GuidesPage = () => {
   const [guides, setGuides] = useState<Guide[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedGuide, setSelectedGuide] = useState<Guide | null>(null);
-  const [markdownContent, setMarkdownContent] = useState<string>('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -85,24 +83,15 @@ const GuidesPage = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleOpenGuide = async (guide: Guide) => {
-    try {
-      const response = await fetch(guide.markdownUrl);
-      const content = await response.text();
-      setMarkdownContent(content);
-      setSelectedGuide(guide);
-    } catch (error) {
-      console.error('Error loading markdown:', error);
-    }
+  const slugFromUrl = (url: string) => {
+    const parts = url.split('/');
+    const file = parts[parts.length - 1];
+    return file.replace(/\.md$/i, '');
   };
 
-  const handleCloseGuide = () => {
-    setSelectedGuide(null);
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
+  const handleOpenGuide = (guide: Guide) => {
+    const slug = slugFromUrl(guide.markdownUrl);
+    navigate(`/guides/${slug}`);
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -134,14 +123,14 @@ const GuidesPage = () => {
 
       <Navbar />
 
-      <main className="flex-grow pt-24 pb-16 cow-grid-bg">
+      <main className="flex-grow pt-24 pb-16 cow-grid-bg font-geist">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-vt323 mb-8 text-center">
               <span className="text-cow-purple">Minecraft</span> Guides
             </h1>
 
-            <p className="text-center text-muted-foreground mb-12 max-w-xl mx-auto">
+            <p className="text-center text-muted-foreground mb-12 max-w-xl mx-auto leading-relaxed" style={{ wordSpacing: '0.05em' }}>
               Step-by-step tutorials to help you level up your Minecraft content creation skills.
               From beginner basics to advanced techniques.
             </p>
@@ -170,7 +159,9 @@ const GuidesPage = () => {
                         </div>
                       </div>
                       <CardTitle className="font-vt323 text-xl">{guide.title}</CardTitle>
-                      <CardDescription>{guide.description}</CardDescription>
+                      <CardDescription className="leading-relaxed" style={{ wordSpacing: '0.03em' }}>
+                        {guide.description}
+                      </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center text-muted-foreground text-sm">
@@ -185,27 +176,6 @@ const GuidesPage = () => {
           </div>
         </div>
       </main>
-
-      <Dialog open={!!selectedGuide} onOpenChange={() => handleCloseGuide()}>
-        <DialogContent className="max-w-4xl h-[80vh] overflow-y-auto">
-          <div className="flex justify-between items-center sticky top-0 bg-background pt-4 pb-2">
-            <h2 className="text-2xl font-vt323">{selectedGuide?.title}</h2>
-            <button onClick={handleCloseGuide} className="text-muted-foreground hover:text-foreground">
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-          <div className="prose prose-invert max-w-none">
-            <ReactMarkdown
-              components={{
-                ol: ({children}) => <ol className="list-decimal pl-6 space-y-1">{children}</ol>,
-                li: ({children}) => <li className="marker:text-muted-foreground">{children}</li>
-              }}
-            >
-              {markdownContent}
-            </ReactMarkdown>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       <Footer />
       <DonateButton />
