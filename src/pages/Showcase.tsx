@@ -48,7 +48,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewAsset, setPreviewAsset] = useState<ShowcaseAsset | null>(null);
   return (
-    <Card className="pixel-corners bg-card border-white/10">
+    <Card className="pixel-corners bg-card border-white/10 w-full max-w-2xl mx-auto">
       <CardHeader>
         <div className="flex items-center gap-3">
           {profileUrl ? (
@@ -107,14 +107,14 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
                   setPreviewOpen(true);
                 }
               }}
-              className="group pixel-corners overflow-hidden border border-white/10 cursor-zoom-in transition-transform duration-200 hover:scale-[1.015] hover:border-white/20"
+              className="group pixel-corners overflow-hidden border border-white/10 cursor-zoom-in transition-transform duration-200 hover:scale-[1.015] hover:border-white/20 h-56 bg-background/40"
             
             >
               {(effectiveKind === "image") && (
                 <img src={a.url} alt="showcase" className="w-full h-full object-cover" />
               )}
               {(effectiveKind === "video") && (
-                <video src={a.url} controls className="w-full h-full" />
+                <video src={a.url} controls className="w-full h-full object-cover" />
               )}
               {(effectiveKind === "audio") && (
                 <div className="w-full h-full flex items-center justify-center p-3 text-xs text-white/70">Audio</div>
@@ -508,7 +508,7 @@ const ShowcasePage: React.FC = () => {
             <p className="max-w-md">Be the first to share your art! Click "Create Showcase" to upload images or videos, or paste external links.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 gap-6 justify-items-center">
             {items.map((it) => (
               <ShowcaseCard key={it.id} item={it} />
             ))}
