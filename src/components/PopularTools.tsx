@@ -25,8 +25,8 @@ const PopularTools = () => {
     },
     {
       id: 2,
-      title: 'YouTube Video Downloader',
-      description: 'Download YouTube videos in various formats and resolutions.',
+      title: 'YouTube Tools',
+      description: 'Download YouTube thumbnails and see detail analytics of a video.',
       icon: Download,
       path: '/youtube-downloader',
       color: 'from-purple-500/80 to-purple-600/80'

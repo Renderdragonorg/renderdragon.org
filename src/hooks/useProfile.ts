@@ -10,6 +10,7 @@ interface UserProfile {
   display_name?: string | null;
   first_name?: string | null;
   last_name?: string | null;
+  avatar_url?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -47,6 +48,7 @@ export const useProfile = () => {
         display_name: data.display_name || null,
         first_name: data.first_name || null,
         last_name: data.last_name || null,
+        avatar_url: (data as any).avatar_url || null,
         created_at: data.created_at,
         updated_at: data.updated_at
       };
@@ -81,6 +83,7 @@ export const useProfile = () => {
         display_name: data.display_name || null,
         first_name: data.first_name || null,
         last_name: data.last_name || null,
+        avatar_url: data.avatar_url || null,
         created_at: data.created_at,
         updated_at: data.updated_at
       };

@@ -34,6 +34,7 @@ type ResourceFiltersProps = {
   onSortOrderChange: (order: string) => void;
   isMobile: boolean;
   inputRef: React.MutableRefObject<HTMLInputElement | null>;
+  onOpenSubmit: () => void;
 };
 
 const ResourceFilters = ({
@@ -46,7 +47,8 @@ const ResourceFilters = ({
   onCategoryChange,
   onSubcategoryChange,
   isMobile,
-  inputRef
+  inputRef,
+  onOpenSubmit
 }: ResourceFiltersProps) => {
   return (
     <div className="mb-8 flex flex-col md:flex-row gap-4">
@@ -86,6 +88,7 @@ const ResourceFilters = ({
           selectedSubcategory={selectedSubcategory}
           onCategoryChange={onCategoryChange}
           onSubcategoryChange={onSubcategoryChange}
+          onOpenSubmit={onOpenSubmit}
         />
       ) : (
         <DesktopFilters 
@@ -93,6 +96,7 @@ const ResourceFilters = ({
           selectedSubcategory={selectedSubcategory}
           onCategoryChange={onCategoryChange}
           onSubcategoryChange={onSubcategoryChange}
+          onOpenSubmit={onOpenSubmit}
         />
       )}
     </div>
@@ -103,12 +107,14 @@ const MobileFilters = ({
   selectedCategory, 
   selectedSubcategory,
   onCategoryChange,
-  onSubcategoryChange
+  onSubcategoryChange,
+  onOpenSubmit
 }: {
   selectedCategory: string | null;
   selectedSubcategory: string | null;
   onCategoryChange: (category: string | null) => void;
   onSubcategoryChange: (subcategory: string | null) => void;
+  onOpenSubmit: () => void;
 }) => {
   return (
     <Sheet>
@@ -180,13 +186,14 @@ const MobileFilters = ({
               Presets
             </Button>
             <Button
-              variant={selectedCategory === 'favorites' ? 'default' : 'outline'}
-              onClick={() => onCategoryChange('favorites')}
-              className="justify-start pixel-corners"
+              variant="default"
+              onClick={onOpenSubmit}
+              className="justify-start pixel-corners font-vt323"
             >
-              <Heart className="h-4 w-4 mr-2" />
-              Favorites
+              Submit your resources
             </Button>
+            
+
             {selectedCategory === 'presets' && (
               <div className="mt-2 ml-2">
                 <Select
@@ -215,12 +222,14 @@ const DesktopFilters = ({
   selectedCategory, 
   selectedSubcategory,
   onCategoryChange,
-  onSubcategoryChange
+  onSubcategoryChange,
+  onOpenSubmit
 }: {
   selectedCategory: string | null;
   selectedSubcategory: string | null;
   onCategoryChange: (category: string | null) => void;
   onSubcategoryChange: (subcategory: string | null) => void;
+  onOpenSubmit: () => void;
 }) => {
   return (
     <div className="flex flex-wrap gap-2">
@@ -281,14 +290,15 @@ const DesktopFilters = ({
         Presets
       </Button>
       <Button
-        variant={selectedCategory === 'favorites' ? 'default' : 'outline'}
+        variant="default"
         size="sm"
-        onClick={() => onCategoryChange('favorites')}
-        className="h-10 pixel-corners bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white hover:opacity-90"
+        onClick={onOpenSubmit}
+        className="h-10 pixel-corners font-vt323"
       >
-        <Heart className="h-4 w-4 mr-2" />
-        Favorites
+        Submit your resources
       </Button>
+      
+
       {selectedCategory === 'presets' && (
         <Select
           value={selectedSubcategory || "all"}

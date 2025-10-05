@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { Readable } from 'stream';
@@ -5,6 +6,8 @@ import infoHandler from './api/info.js';
 import downloadHandler from './api/download.js';
 import downloadThumbnailHandler from './api/downloadThumbnail.js';
 import generateTitlesHandler from './api/generateTitles.js';
+import { createRouteHandler } from 'uploadthing/express';
+import { uploadRouter } from './src/integrations/uploadthing/router.js';
 
 const app = express();
 const port = 3000;
@@ -50,7 +53,18 @@ app.all('/api/info', createAdapter(infoHandler));
 app.all('/api/download', createAdapter(downloadHandler));
 app.all('/api/downloadThumbnail', createAdapter(downloadThumbnailHandler));
 app.all('/api/generateTitles', createAdapter(generateTitlesHandler));
+// UploadThing route
+app.use(
+  '/api/uploadthing',
+  createRouteHandler({
+    router: uploadRouter,
+    // Explicitly pass token from env per UploadThing v7 docs
+    config: {
+      token: process.env.UPLOADTHING_TOKEN,
+    },
+  })
+);
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
-}); 
+});

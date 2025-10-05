@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,11 +8,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useAuth } from "@/hooks/useAuth";
-import { LogOut, Heart, User, Settings } from "lucide-react";
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
+import { useAuth } from '@/hooks/useAuth';
+import { LogOut, Heart, User, Settings } from 'lucide-react';
+import { useProfile } from '@/hooks/useProfile';
 
 interface UserMenuProps {
   onShowFavorites: () => void;
@@ -20,60 +22,81 @@ interface UserMenuProps {
 
 const UserMenu = ({ onShowFavorites }: UserMenuProps) => {
   const { user, signOut } = useAuth();
-  const [displayName, setDisplayName] = useState("");
-  const [initials, setInitials] = useState("");
-
-  useEffect(() => {
-    if (user) {
-      // Priority: 1. User metadata display_name, 2. Email username
-      let name = user.user_metadata?.display_name;
-
-      if (!name && user.email) {
-        name = user.email.split("@")[0] || "User";
-      }
-      if (!name) {
-        name = "User";
-      }
-
-      setDisplayName(name);
-
-      // Generate initials
-      if (name.includes(" ")) {
-        const initials = name
-          .split(" ")
-          .map((word) => word.charAt(0).toUpperCase())
-          .slice(0, 2)
-          .join("");
-        setInitials(initials);
-      } else {
-        setInitials(name.slice(0, 2).toUpperCase());
-      }
-    }
-  }, [user]); // Re-run when user object changes
+  const { profile } = useProfile();
 
   if (!user) return null;
+
+  const getInitials = (display: string) => {
+    if (!display) return 'U';
+    return display.split(' ').join('').slice(0, 2).toUpperCase();
+  };
+
+  // Narrow user metadata shape to avoid any
+  const meta = (user.user_metadata ?? {}) as {
+    avatar_url?: string;
+    picture?: string;
+    display_name?: string;
+  };
+  const identities = (user.identities ?? []) as Array<{
+    identity_data?: Record<string, unknown> | null;
+    provider?: string | null;
+  }>;
+
+  // Extract possible URLs from identities (GitHub/Discord sometimes store here)
+  const identityAvatar = identities
+    .map((i) => (i.identity_data || {}))
+    .map((d) => (d?.avatar_url as string) || (d?.picture as string) || (d?.avatar as string) || '')
+    .find((u) => !!u);
+
+  const displayName = (profile?.display_name as string | undefined) || meta.display_name || user.email || '';
+
+  // Validate URL is http/https or data: to avoid trying to load invalid strings like CIDs or tokens
+  const toSafeHttpUrl = (url?: string | null) => {
+    if (!url) return undefined;
+    try {
+      const u = new URL(url);
+      if (u.protocol === 'http:' || u.protocol === 'https:' || u.protocol === 'data:') return u.toString();
+      return undefined;
+    } catch {
+      return undefined;
+    }
+  };
+
+  // Choose the first safe candidate among profile, metadata, identities
+  const candidates = [profile?.avatar_url, meta.avatar_url, meta.picture, identityAvatar].filter(Boolean) as string[];
+  const safeAvatarUrl = candidates.map(toSafeHttpUrl).find((u) => !!u);
+  if (process.env.NODE_ENV !== 'production') {
+    console.debug('[UserMenu] avatar candidates', {
+      profileAvatar: profile?.avatar_url,
+      metaAvatar: meta.avatar_url,
+      metaPicture: meta.picture,
+      identityAvatar,
+      chosen: safeAvatarUrl,
+      displayName,
+    });
+  }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
             <Avatar className="h-8 w-8">
+              {safeAvatarUrl && <AvatarImage src={safeAvatarUrl} alt="User avatar" referrerPolicy="no-referrer" />}
               <AvatarFallback className="bg-cow-purple text-white text-xs">
-                {initials}
+                {getInitials(displayName)}
               </AvatarFallback>
             </Avatar>
           </motion.div>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        className="w-56 pixel-corners"
-        align="end"
-        forceMount
-      >
+      <DropdownMenuContent className="w-56 pixel-corners" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{displayName}</p>
+            <p className="text-sm font-medium leading-none">Account</p>
             <p className="text-xs leading-none text-muted-foreground">
               {user.email}
             </p>

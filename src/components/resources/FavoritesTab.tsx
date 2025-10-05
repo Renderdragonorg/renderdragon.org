@@ -3,10 +3,11 @@ import { useUserFavorites } from '@/hooks/useUserFavorites';
 import { useResources } from '@/hooks/useResources';
 import { useDownloadCounts } from '@/hooks/useDownloadCounts';
 import ResourceCard from './ResourceCard';
+import ResourceCardSkeleton from './ResourceCardSkeleton';
 import { Heart } from 'lucide-react';
 
 const FavoritesTab = () => {
-  const { favorites, isLoading: favoritesLoading } = useUserFavorites();
+  const {favorites, isLoading: favoritesLoading } = useUserFavorites();
   const { resources, isLoading: resourcesLoading, setSelectedResource } = useResources();
   const { downloadCounts } = useDownloadCounts();
 
@@ -15,7 +16,13 @@ const FavoritesTab = () => {
   const favoriteResources = resources.filter(resource => favorites.includes(String(resource.id)));
 
   if (isLoading) {
-    return <div className="text-center p-4">Loading favorites...</div>;
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {Array.from({ length: 8 }).map((_, idx) => (
+          <ResourceCardSkeleton key={`fav-skel-${idx}`} />
+        ))}
+      </div>
+    );
   }
 
   if (favoriteResources.length === 0) {
