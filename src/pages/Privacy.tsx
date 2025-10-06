@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DonateButton from '@/components/DonateButton';
@@ -10,18 +9,7 @@ const Privacy = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>Privacy Policy - Renderdragon</title>
-        <meta name="description" content="Learn about how we protect your privacy and handle your data at Renderdragon." />
-        <meta property="og:title" content="Privacy Policy - Renderdragon" />
-        <meta property="og:description" content="Learn about how we protect your privacy and handle your data at Renderdragon." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/background.png" />
-        <meta property="og:url" content="https://renderdragon.org/privacy" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Privacy Policy - Renderdragon" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/background.png" />
-      </Helmet>
-      
+            
       <Navbar />
       
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">

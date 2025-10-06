@@ -4,24 +4,12 @@ import { useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DonateButton from '@/components/DonateButton';
-import { Helmet } from 'react-helmet-async';
 
 const FAQ = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>FAQ - Renderdragon</title>
-        <meta name="description" content="Find answers to frequently asked questions about Renderdragon's tools, services, and resources for Minecraft content creators." />
-        <meta property="og:title" content="FAQ - Renderdragon" />
-        <meta property="og:description" content="Find answers to frequently asked questions about Renderdragon's tools, services, and resources for Minecraft content creators." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/faq.png" />
-        <meta property="og:url" content="https://renderdragon.org/faq" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="FAQ - Renderdragon" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/faq.png" />
-      </Helmet>
-      
+            
       <Navbar />
       
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">

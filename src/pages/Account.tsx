@@ -16,7 +16,6 @@ import Footer from '@/components/Footer';
 import { toast } from 'sonner';
 import { User, Mail, Calendar, LogOut } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
 import AccountPageSkeleton from '@/components/skeletons/AccountPageSkeleton';
 
 const Account = () => {
@@ -121,11 +120,7 @@ const Account = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>My Account - Renderdragon</title>
-        <meta name="description" content="Manage your Renderdragon account settings and profile information." />
-      </Helmet>
-      
+            
       <Navbar />
       
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">

@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Download, Copy, RefreshCw, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -147,19 +146,7 @@ const PlayerRenderer = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>Player Renderer - Renderdragon</title>
-        <meta name="description" content="Generate and download Minecraft player renders using different rendering services." />
-        <meta property="og:title" content="Player Renderer - Renderdragon" />
-        <meta property="og:description" content="Generate and download Minecraft player renders using different rendering services." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/player.png" />
-        <meta property="og:url" content="https://renderdragon.org/player-renderer" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Player Renderer - Renderdragon" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/player.png" />
-      </Helmet>
-
-      <Navbar />
+            <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">

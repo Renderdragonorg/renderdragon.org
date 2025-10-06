@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DonateButton from '@/components/DonateButton';
@@ -9,18 +8,7 @@ import DonateButton from '@/components/DonateButton';
 const TOS = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>Terms of Service - Renderdragon</title>
-        <meta name="description" content="Read our Terms of Service to understand the rules and guidelines for using Renderdragon's tools and resources." />
-        <meta property="og:title" content="Terms of Service - Renderdragon" />
-        <meta property="og:description" content="Read our Terms of Service to understand the rules and guidelines for using Renderdragon's tools and resources." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/tos.png" />
-        <meta property="og:url" content="https://renderdragon.org/tos" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Terms of Service - Renderdragon" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/tos.png" />
-      </Helmet>
-      
+            
       <Navbar />
       
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">

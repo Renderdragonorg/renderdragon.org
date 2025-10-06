@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Helmet } from 'react-helmet-async';
 import { MessageSquare, Twitter, Tag } from 'lucide-react';
 import DonateButton from '@/components/DonateButton';
 import TweetGenerator from '@/components/generators/TweetGenerator';
@@ -14,18 +13,7 @@ import MinecraftNametagGenerator from '@/components/generators/MinecraftNametagG
 const Generators = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>Content Generators - Renderdragon</title>
-        <meta name="description" content="Generate social media content, YouTube comments, and Minecraft nametags with our easy-to-use generators." />
-        <meta property="og:title" content="Content Generators - Renderdragon" />
-        <meta property="og:description" content="Generate social media content, YouTube comments, and Minecraft nametags with our easy-to-use generators." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/generators.png" />
-        <meta property="og:url" content="https://renderdragon.org/generators" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Content Generators - Renderdragon" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/generators.png" />
-      </Helmet>
-      
+            
       <Navbar />
       
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">

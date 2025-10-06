@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -111,11 +110,7 @@ const ProfilePage: React.FC = () => {
     <div className="min-h-screen bg-background cow-grid-bg">
       <Navbar />
       <div className="container mx-auto px-4 pt-28 pb-12">
-        <Helmet>
-          <title>{profile ? `${name} • Profile | Renderdragon` : "Profile | Renderdragon"}</title>
-        </Helmet>
-
-        {loading ? (
+                {loading ? (
           <div className="flex items-center justify-center py-24">
             <Loader2 className="h-6 w-6 animate-spin text-cow-purple" />
           </div>

@@ -15,7 +15,6 @@ import ResourcesList from '@/components/resources/ResourcesList';
 import AuthDialog from '@/components/auth/AuthDialog';
 import { Button } from '@/components/ui/button';
 import { ArrowUp, Heart, Grid, Search } from 'lucide-react';
-import { Helmet } from "react-helmet-async";
 import DonateButton from '@/components/DonateButton';
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -113,18 +112,7 @@ const ResourcesHub = () => {
 
   return (
     <div className="min-h-screen flex flex-col relative">
-      <Helmet>
-        <title>Resources Hub</title>
-        <meta name="description" content="Explore a vast collection of resources for RenderDragon." />
-        <meta property="og:title" content="Resources Hub" />
-        <meta property="og:description" content="Explore a vast collection of resources for RenderDragon." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/resources.png" />
-        <meta property="og:url" content="https://renderdragon.org/resources" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Resources Hub" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/resources.png" />
-      </Helmet>
-      <Navbar />
+            <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg custom-scrollbar">
         <div className="container mx-auto px-4">

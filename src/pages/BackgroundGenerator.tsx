@@ -9,7 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Download, RefreshCcw, Image as ImageIcon, Upload, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Helmet } from 'react-helmet-async';
 
 const BackgroundGenerator = () => {
   const [color, setColor] = useState('#9b87f5');
@@ -150,18 +149,7 @@ const BackgroundGenerator = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>Background Generator - Renderdragon</title>
-        <meta name="description" content="Create unique and engaging backgrounds for your Minecraft YouTube thumbnails and channel art with our background generator tool." />
-        <meta property="og:title" content="Background Generator - Renderdragon" />
-        <meta property="og:description" content="Create unique and engaging backgrounds for your Minecraft YouTube thumbnails and channel art with our background generator tool." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/background.png" />
-        <meta property="og:url" content="https://renderdragon.org/background-generator" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Background Generator - Renderdragon" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/background.png" />
-      </Helmet>
-      <Navbar />
+            <Navbar />
       
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">

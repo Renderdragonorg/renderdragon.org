@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { useAuth } from "@/hooks/useAuth";
 import { UploadButton } from "@/components/UploadThingClient";
 import { createShowcase, listShowcases, type Showcase, type ShowcaseAsset, type ShowcaseTag } from "@/lib/showcases";
@@ -275,11 +274,7 @@ const ShowcasePage: React.FC = () => {
       <Navbar />
       {/* pad top to avoid content under fixed navbar */}
       <div className="container mx-auto px-4 pt-28 pb-12">
-        <Helmet>
-          <title>Showcase | Renderdragon</title>
-          <meta name="description" content="Share your art with images and videos." />
-        </Helmet>
-        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 mb-6">
+                <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 mb-6">
           <h1 className="text-3xl md:text-4xl font-vt323">Community <span className="text-cow-purple">Assets</span></h1>
           <div className="flex-1" />
           <div className="flex items-center gap-2 w-full md:w-auto">

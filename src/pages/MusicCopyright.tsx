@@ -12,7 +12,6 @@ import { toast } from 'sonner';
 import { checkCopyrightStatus, extractYouTubeID } from '@/utils/copyrightChecker';
 import { CopyrightResult } from '@/types/copyright';
 import ResultsDisplay from '@/components/ResultsDisplay';
-import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@/hooks/useAuth';
 import AuthDialog from '@/components/auth/AuthDialog';
 import ResultsDisplaySkeleton from '@/components/skeletons/ResultsDisplaySkeleton';
@@ -114,18 +113,7 @@ const MusicCopyright = () => {
   if (!loading && !user) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Helmet>
-          <title>Music Copyright Checker - Renderdragon</title>
-          <meta name="description" content="Check if music is safe to use in your Minecraft videos. Avoid copyright strikes with our music copyright checker tool." />
-          <meta property="og:title" content="Music Copyright Checker - Renderdragon" />
-          <meta property="og:description" content="Check if music is safe to use in your Minecraft videos. Avoid copyright strikes with our music copyright checker tool." />
-          <meta property="og:image" content="https://renderdragon.org/ogimg/copyright.png" />
-          <meta property="og:url" content="https://renderdragon.org/gappa" />
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content="Music Copyright Checker - Renderdragon" />
-          <meta name="twitter:image" content="https://renderdragon.org/ogimg/copyright.png" />
-        </Helmet>
-        <Navbar />
+                <Navbar />
         <main className="flex-grow pt-24 pb-16 cow-grid-bg flex flex-col items-center justify-center">
           <div className="max-w-md w-full mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-vt323 mb-8 text-center">
@@ -145,18 +133,7 @@ const MusicCopyright = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>Music Copyright Checker - Renderdragon</title>
-        <meta name="description" content="Check if music is safe to use in your Minecraft videos. Avoid copyright strikes with our music copyright checker tool." />
-        <meta property="og:title" content="Music Copyright Checker - Renderdragon" />
-        <meta property="og:description" content="Check if music is safe to use in your Minecraft videos. Avoid copyright strikes with our music copyright checker tool." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/copyright.png" />
-        <meta property="og:url" content="https://renderdragon.org/gappa" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Music Copyright Checker - Renderdragon" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/copyright.png" />
-      </Helmet>
-      <Navbar />
+            <Navbar />
       
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">

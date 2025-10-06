@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Badge } from '@/components/ui/badge';
-import { Helmet } from 'react-helmet-async';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from 'sonner';
 import { JoinServerIcon } from '@/components/JoinServerIcon';
@@ -276,18 +275,7 @@ const Community = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>Community - Renderdragon</title>
-        <meta name="description" content="Join our community of Minecraft content creators. Find helpful tutorials, guides, and Discord servers to connect with other creators." />
-        <meta property="og:title" content="Community - Renderdragon" />
-        <meta property="og:description" content="Join our community of Minecraft content creators. Find helpful tutorials, guides, and Discord servers to connect with other creators." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/community.png" />
-        <meta property="og:url" content="https://renderdragon.org/community" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Community - Renderdragon" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/community.png" />
-      </Helmet>
-      
+            
       <Navbar />
       
       <main className="flex-grow py-24 cow-grid-bg">

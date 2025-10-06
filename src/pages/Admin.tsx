@@ -5,7 +5,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { redirect } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Shield } from 'lucide-react';
 import AdminPageSkeleton from '@/components/skeletons/AdminPageSkeleton';
@@ -40,11 +39,7 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>Admin Panel - Renderdragon</title>
-        <meta name="robots" content="noindex, nofollow" />
-      </Helmet>
-      
+            
       <Navbar />
       
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">

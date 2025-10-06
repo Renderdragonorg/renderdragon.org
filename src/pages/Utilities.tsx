@@ -8,7 +8,6 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Helmet } from 'react-helmet-async';
 
 interface Utility {
   name: string;
@@ -170,18 +169,7 @@ const Utils = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>Useful Utilities - Renderdragon</title>
-        <meta name="description" content="Discover essential utilities for Minecraft content creators. Find video editing, recording, and streaming software recommendations." />
-        <meta property="og:title" content="Useful Utilities - Renderdragon" />
-        <meta property="og:description" content="Discover essential utilities for Minecraft content creators. Find video editing, recording, and streaming software recommendations." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/software.png" />
-        <meta property="og:url" content="https://renderdragon.org/utilities" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Useful Utilities - Renderdragon" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/software.png" />
-      </Helmet>
-      <Navbar />
+            <Navbar />
       
       <main className="container mx-auto px-4 py-16 pt-24">
         <motion.div 

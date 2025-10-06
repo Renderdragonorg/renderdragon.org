@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -105,12 +104,7 @@ const TextGenerator = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Minecraft Text Generator</title>
-        <meta name="description" content="Generate custom Minecraft text with various styles and effects" />
-      </Helmet>
-
-      <Navbar />
+            <Navbar />
       
       <main className="flex-grow pt-24 pb-16 cow-grid-bg custom-scrollbar">
         <div className="container mx-auto px-4">

@@ -2,7 +2,6 @@
 
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Helmet } from 'react-helmet-async';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -76,11 +75,7 @@ const AiTitleHelper = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>AI Title Helper - Renderdragon</title>
-        <meta name="description" content="Generate engaging video titles with AI." />
-      </Helmet>
-      <Navbar />
+            <Navbar />
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">

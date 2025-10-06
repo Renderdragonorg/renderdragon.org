@@ -6,7 +6,6 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DonateButton from '@/components/DonateButton';
-import { Helmet } from 'react-helmet-async';
 import ReactMarkdown from 'react-markdown';
 import { ArrowLeft, ListTree, Loader2 } from 'lucide-react';
 
@@ -72,19 +71,7 @@ export default function GuideView() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>{title} - Guides - Renderdragon</title>
-        <meta name="description" content={`Read the ${title} guide on Renderdragon.`} />
-        <meta property="og:title" content={`${title} - Renderdragon Guides`} />
-        <meta property="og:description" content={`Read the ${title} guide on Renderdragon.`} />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/guides.png" />
-        <meta property="og:url" content={`https://renderdragon.org/guides/${slug}`} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${title} - Renderdragon Guides`} />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/guides.png" />
-      </Helmet>
-
-      <Navbar />
+            <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">

@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { toast } from 'sonner';
-import { Helmet } from 'react-helmet-async';
 import VideoInfoSkeleton from '@/components/skeletons/VideoInfoSkeleton';
 
 // API types from mediapye YouTube Video Inspector
@@ -247,14 +246,7 @@ const YouTubeDownloader: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>Youtube Tools - Renderdragon</title>
-        <meta
-          name="description"
-          content="Inspect YouTube video details for fair use and educational purposes. View channel, stats, duration, and thumbnail with quick download."
-        />
-      </Helmet>
-      <Navbar />
+            <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">

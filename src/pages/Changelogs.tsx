@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DonateButton from '@/components/DonateButton';
-import { Helmet } from 'react-helmet-async';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -38,17 +37,7 @@ export default function Changelogs() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>Changelogs - Renderdragon</title>
-        <meta name="description" content="See the latest improvements and updates to Renderdragon." />
-        <meta property="og:title" content="Changelogs - Renderdragon" />
-        <meta property="og:description" content="See the latest improvements and updates to Renderdragon." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/og.png" />
-        <meta property="og:url" content="https://renderdragon.org/changelogs" />
-        <meta name="twitter:card" content="summary_large_image" />
-      </Helmet>
-
-      <Navbar />
+            <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">

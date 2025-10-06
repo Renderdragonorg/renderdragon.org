@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import FeaturedResources from '@/components/FeaturedResources';
@@ -49,18 +48,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>RenderDragon - Free Resources for Creators</title>
-        <meta name="description" content="The ultimate hub for creators. Find free resources for your next project, including music, sound effects, images, and more." />
-        <meta property="og:title" content="RenderDragon - Free Resources for Creators" />
-        <meta property="og:description" content="The ultimate hub for creators. Find free resources for your next project, including music, sound effects, images, and more." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg.png" />
-        <meta property="og:url" content="https://renderdragon.org" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="RenderDragon - Free Resources for Creators" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg.png" />
-      </Helmet>
-      <Navbar />
+            <Navbar />
       <main className="flex-grow">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

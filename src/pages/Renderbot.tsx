@@ -5,7 +5,6 @@ import { Bot, Command } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Helmet } from 'react-helmet-async';
 
 interface BotCommand {
   name: string;
@@ -75,13 +74,7 @@ const Renderbot = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>Renderbot - Discord Bot for Minecraft Content Creators</title>
-        <meta name="description" content="A powerful Discord bot designed for content creators. Check copyright status, fetch video information, and manage YouTube content with simple commands." />
-        <meta property="og:title" content="Renderbot - Renderdragon" />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/renderbot.png" />
-      </Helmet>
-      <Navbar />
+            <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">

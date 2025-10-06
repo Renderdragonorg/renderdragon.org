@@ -4,7 +4,6 @@ import { ReactNode, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { AuthProvider } from '@/hooks/useAuth';
-import { HelmetProvider } from 'react-helmet-async';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as Sonner } from '@/components/ui/sonner';
@@ -18,15 +17,13 @@ export default function Providers({ children }: { children: ReactNode }) {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <HelmetProvider>
-            <TooltipProvider>
-              {children}
-              <Toaster />
-              <Sonner />
-              <VercelAnalytics />
-              <SpeedInsights />
-            </TooltipProvider>
-          </HelmetProvider>
+          <TooltipProvider>
+            {children}
+            <Toaster />
+            <Sonner />
+            <VercelAnalytics />
+            <SpeedInsights />
+          </TooltipProvider>
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
