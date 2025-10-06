@@ -1,5 +1,7 @@
+'use client';
+
 import React, { Fragment, useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { ShoppingCart, ChevronDown, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
@@ -66,7 +68,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <Link 
-              to="/" 
+              href="/" 
               className="flex items-center space-x-2 text-xl font-bold mb-4"
             >
               <div className="flex items-center justify-center">
@@ -126,12 +128,12 @@ const Footer = () => {
             <h3 className="text-lg font-vt323 mb-4">Legal</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/tos" className="text-white/70 hover:text-white transition-colors">
+                <Link href="/tos" className="text-white/70 hover:text-white transition-colors">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="text-white/70 hover:text-white transition-colors">
+                <Link href="/privacy" className="text-white/70 hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
               </li>
@@ -140,33 +142,33 @@ const Footer = () => {
             <h3 className="text-lg font-vt323 mb-4 mt-6">Navigate</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="text-white/70 hover:text-white transition-colors">
+                <Link href="/" className="text-white/70 hover:text-white transition-colors">
                   Home
                 </Link>
               </li>
               <li>
-                <Link to="/resources" className="text-white/70 hover:text-white transition-colors">
+                <Link href="/resources" className="text-white/70 hover:text-white transition-colors">
                   Resources Hub
                 </Link>
               </li>
               <li>
-                <Link to="/showcase" className="text-white/70 hover:text-white transition-colors flex items-center">
+                <Link href="/showcase" className="text-white/70 hover:text-white transition-colors flex items-center">
                   <span>Community Assets</span>
                   <span className="ml-1 px-1.5 py-0.5 bg-cow-purple text-white text-[10px] rounded align-middle">NEW</span>
                 </Link>
               </li>
               <li>
-                <Link to="/guides" className="text-white/70 hover:text-white transition-colors">
+                <Link href="/guides" className="text-white/70 hover:text-white transition-colors">
                   Guides
                 </Link>
               </li>
               <li>
-                <Link to="/utilities" className="text-white/70 hover:text-white transition-colors">
+                <Link href="/utilities" className="text-white/70 hover:text-white transition-colors">
                   Utilities
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-white/70 hover:text-white transition-colors">
+                <Link href="/contact" className="text-white/70 hover:text-white transition-colors">
                   Contact
                 </Link>
               </li>
@@ -177,43 +179,43 @@ const Footer = () => {
             <h3 className="text-lg font-vt323 mb-4">Tools</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/gappa" className="text-white/70 hover:text-white transition-colors">
+                <Link href="/gappa" className="text-white/70 hover:text-white transition-colors">
                   Music Copyright Checker
                 </Link>
               </li>
               <li>
-                <Link to="/background-generator" className="text-white/70 hover:text-white transition-colors">
+                <Link href="/background-generator" className="text-white/70 hover:text-white transition-colors">
                   Background Generator
                 </Link>
               </li>
               <li>
-                <Link to="/player-renderer" className="text-white/70 hover:text-white transition-colors">
+                <Link href="/player-renderer" className="text-white/70 hover:text-white transition-colors">
                   Player Renderer
                 </Link>
               </li>
               <li>
-                <Link to="/renderbot" className="text-white/70 hover:text-white transition-colors">
+                <Link href="/renderbot" className="text-white/70 hover:text-white transition-colors">
                   Renderbot
                 </Link>
               </li>
               <li>
-                <Link to="/text-generator" className="text-white/70 hover:text-white transition-colors">
+                <Link href="/text-generator" className="text-white/70 hover:text-white transition-colors">
                   Text Generator
                 </Link>
               </li>
               <li>
-                <Link to="/generators" className="text-white/70 hover:text-white transition-colors">
+                <Link href="/generators" className="text-white/70 hover:text-white transition-colors">
                   Content Generators
                 </Link>
               </li>
               <li>
-                <Link to="/youtube-downloader" className="text-white/70 hover:text-white transition-colors flex items-center">
+                <Link href="/youtube-downloader" className="text-white/70 hover:text-white transition-colors flex items-center">
                   <span>Youtube Tools</span>
                   <span className="ml-1 px-1.5 py-0.5 bg-cow-purple text-white text-[10px] rounded align-middle">NEW</span>
                 </Link>
               </li>
               <li>
-                <Link to="/ai-title-helper" className="text-white/70 hover:text-white transition-colors flex items-center">
+                <Link href="/ai-title-helper" className="text-white/70 hover:text-white transition-colors flex items-center">
                   <span>AI Title Helper</span>
                   <span className="ml-1 px-1.5 py-0.5 bg-cow-purple text-white text-[10px] rounded align-middle">NEW</span>
                 </Link>
@@ -224,19 +226,19 @@ const Footer = () => {
         
         <div className="pt-8 mt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center space-x-4 mb-4 md:mb-0">
-            <Link to="/faq" className="text-white/70 hover:text-white transition-colors text-sm relative">
+            <Link href="/faq" className="text-white/70 hover:text-white transition-colors text-sm relative">
               FAQ
             </Link>
             
-            <Link to="/tos" className="text-white/70 hover:text-white transition-colors text-sm">
+            <Link href="/tos" className="text-white/70 hover:text-white transition-colors text-sm">
               Terms
             </Link>
             
-            <Link to="/privacy" className="text-white/70 hover:text-white transition-colors text-sm">
+            <Link href="/privacy" className="text-white/70 hover:text-white transition-colors text-sm">
               Privacy
             </Link>
 
-            <Link to="/renderbot" className="text-white/70 hover:text-white transition-colors text-sm">
+            <Link href="/renderbot" className="text-white/70 hover:text-white transition-colors text-sm">
               Renderbot
             </Link>
 

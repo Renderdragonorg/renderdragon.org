@@ -4,14 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "prebuild": "node -e \"const fs=require('fs'),p=require('path');fs.mkdirSync('dist',{recursive:true});const src='changelog.md',dst=p.join('public','changelog.md');if(fs.existsSync(src)){fs.mkdirSync('public',{recursive:true});fs.copyFileSync(src,dst);}\"",
-    "dev": "concurrently \"pnpm run dev:vite\" \"pnpm run dev:server\"",
-    "dev:vite": "vite",
+    "prebuild": "node -e \"const fs=require('fs'),p=require('path');fs.mkdirSync('.next',{recursive:true});const src='changelog.md',dst=p.join('public','changelog.md');if(fs.existsSync(src)){fs.mkdirSync('public',{recursive:true});fs.copyFileSync(src,dst);}\"",
+    "dev": "concurrently \"next dev\" \"node server.js\"",
+    "dev:next": "next dev",
     "dev:server": "node server.js",
-    "build": "pnpm run prebuild && vite build",
-    "build:dev": "vite build --mode development",
+    "build": "npm run prebuild && next build",
+    "start": "next start",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "next start"
   },
   "dependencies": {
     "@distube/ytdl-core": "^4.16.12",

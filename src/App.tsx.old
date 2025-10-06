@@ -62,7 +62,7 @@ const App = () => {
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/background-generator" element={<BackgroundGenerator />} />
                     <Route path="/music-copyright" element={<MusicCopyright />} />
-                    <Route path="/gappa" element={<Navigate to="/music-copyright" replace />} />
+                    <Route path="/gappa" element={<Navigate href="/music-copyright" replace />} />
                     <Route path="/guides" element={<Guides />} />
                     <Route path="/guides/:slug" element={<GuideView />} />
                     <Route path="/community" element={<Community />} />

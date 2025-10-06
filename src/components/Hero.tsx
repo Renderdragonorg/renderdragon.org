@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
+import Link from "next/link"
 import { ArrowRight, Music } from "lucide-react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import * as motion from "motion/react-client"
@@ -218,7 +220,7 @@ const Hero = () => {
             whileTap={{ scale: 0.95 }}
           >
             <Link
-              to="/resources"
+              href="/resources"
               className="pixel-btn-primary inline-flex items-center gap-2 px-6 py-3 text-sm transition-transform"
             >
               <motion.span
@@ -239,7 +241,7 @@ const Hero = () => {
             whileTap={{ scale: 0.95 }}
           >
             <Link
-              to="/gappa"
+              href="/gappa"
               className="pixel-btn-secondary inline-flex items-center gap-2 px-6 py-3 text-sm transition-transform"
             >
               <motion.span

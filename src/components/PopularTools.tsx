@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Download, Music, Bot, Image, PersonStanding } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -103,7 +105,7 @@ const PopularTools = () => {
               variants={itemVariants}
             >
               <Link 
-                to={tool.path}
+                href={tool.path}
                 className="block"
                 onMouseEnter={() => setHoveredId(tool.id)}
                 onMouseLeave={() => setHoveredId(null)}

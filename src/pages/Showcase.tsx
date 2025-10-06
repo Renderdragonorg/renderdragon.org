@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useAuth } from "@/hooks/useAuth";
@@ -5,7 +7,7 @@ import { UploadButton } from "@/components/UploadThingClient";
 import { createShowcase, listShowcases, type Showcase, type ShowcaseAsset, type ShowcaseTag } from "@/lib/showcases";
 import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -52,7 +54,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
       <CardHeader>
         <div className="flex items-center gap-3">
           {profileUrl ? (
-            <Link to={profileUrl} className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+            <Link href={profileUrl} className="flex items-center gap-3 hover:opacity-90 transition-opacity">
               <Avatar className="h-9 w-9">
                 {avatar ? <AvatarImage src={avatar} alt={name} /> : null}
                 <AvatarFallback>{name?.slice(0, 2)?.toUpperCase()}</AvatarFallback>

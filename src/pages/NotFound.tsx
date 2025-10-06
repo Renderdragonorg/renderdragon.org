@@ -1,8 +1,7 @@
-
-"use client"
+'use client';
 
 import { useEffect } from "react"
-import { Link } from "react-router-dom"
+import Link from "next/link"
 import { motion } from "framer-motion"
 import { Home, Compass, Pickaxe } from "lucide-react"
 import Navbar from "@/components/Navbar"
@@ -150,7 +149,7 @@ const NotFound = () => {
           <motion.div className="flex flex-col sm:flex-row justify-center items-center gap-4" variants={itemVariants}>
             <motion.div whileHover={blockHover} whileTap={{ scale: 0.95 }}>
               <Link
-                to="/"
+                href="/"
                 className="pixel-btn-primary inline-flex items-center gap-2 px-6 py-3 text-sm transition-all"
               >
                 <Home className="h-5 w-5" />
@@ -160,7 +159,7 @@ const NotFound = () => {
 
             <motion.div whileHover={blockHover} whileTap={{ scale: 0.95 }}>
               <Link
-                to="/resources"
+                href="/resources"
                 className="pixel-btn-secondary inline-flex items-center gap-2 px-6 py-3 text-sm transition-all"
               >
                 <Compass className="h-5 w-5" />
@@ -196,7 +195,7 @@ const NotFound = () => {
                   scale: 1.05,
                 }}
               >
-                <Link to="/contact" className="underline underline-offset-2">
+                <Link href="/contact" className="underline underline-offset-2">
                   contact us
                 </Link>
               </motion.span>{" "}

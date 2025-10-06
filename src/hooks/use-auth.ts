@@ -1,5 +1,7 @@
+'use client';
+
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 interface AuthUser {
@@ -12,7 +14,7 @@ interface AuthUser {
 export const useAuth = () => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   // Initialize auth state
   useEffect(() => {
@@ -90,8 +92,8 @@ export const useAuth = () => {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user');
     setUser(null);
-    navigate('/');
-  }, [navigate]);
+    router.push('/');
+  }, [router]);
 
   return {
     user,

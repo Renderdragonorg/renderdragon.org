@@ -20,7 +20,8 @@ function slugify(text: string) {
 }
 
 export default function GuideView() {
-  const { slug } = useParams();
+  const params = useParams();
+  const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
   const [markdown, setMarkdown] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -90,7 +91,7 @@ export default function GuideView() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-8 xl:col-span-9">
               <div className="mb-6">
-                <Link to="/guides" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
+                <Link href="/guides" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Guides
                 </Link>

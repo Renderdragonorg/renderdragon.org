@@ -41,7 +41,8 @@ type ProfileRow = {
 };
 
 const ProfilePage: React.FC = () => {
-  const { username } = useParams<{ username: string }>();
+  const params = useParams();
+  const username = Array.isArray(params.username) ? params.username[0] : params.username;
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileRow | null>(null);
   const [showcases, setShowcases] = useState<Showcase[]>([]);

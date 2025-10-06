@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Resource } from '@/types/resources';
@@ -103,7 +105,7 @@ const FeaturedResources = () => {
                 variants={itemVariants}
               >
                 <Link
-                  to="/resources"
+                  href="/resources"
                   onMouseEnter={() => setHoveredId(resource.id)}
                   onMouseLeave={() => setHoveredId(null)}
                   className="block group"
@@ -127,7 +129,7 @@ const FeaturedResources = () => {
           transition={{ delay: 0.6 }}
         >
           <Link 
-            to="/resources" 
+            href="/resources" 
             className="pixel-btn-secondary inline-flex items-center space-x-2 group"
           >
             <span>View All</span>

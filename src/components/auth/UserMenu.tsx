@@ -1,6 +1,8 @@
+'use client';
+
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -104,7 +106,7 @@ const UserMenu = ({ onShowFavorites }: UserMenuProps) => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild className="cursor-pointer">
-          <Link to="/account">
+          <Link href="/account">
             <Settings className="mr-2 h-4 w-4" />
             <span>Account Settings</span>
           </Link>

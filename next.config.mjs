@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   
   // Configure rewrites for API proxy (similar to Vite proxy)
   async rewrites() {
@@ -43,4 +42,4 @@ const nextConfig = {
   productionBrowserSourceMaps: false,
 };
 
-module.exports = nextConfig;
+export default nextConfig;

@@ -282,7 +282,7 @@ const Navbar = () => {
           <div className="w-full bg-gradient-to-r from-cow-purple/90 via-cow-purple to-cow-purple/90 text-white">
             <div className="container mx-auto px-4 py-2 flex items-center justify-center gap-3 text-sm">
               <span className="font-vt323">Check out new improvements on the</span>
-              <Link to="/changelogs" className="underline underline-offset-2 font-vt323">
+              <Link href="/changelogs" className="underline underline-offset-2 font-vt323">
                 changelog page
               </Link>
               <button
@@ -312,7 +312,7 @@ const Navbar = () => {
         />
         <div className="container mx-auto px-4 flex justify-between items-center relative z-10">
           <Link 
-            to="/" 
+            href="/" 
             className="flex items-center space-x-2 text-xl md:text-2xl font-bold tracking-wider"
           >
             <div className="flex items-center justify-center">
@@ -329,7 +329,7 @@ const Navbar = () => {
               'path' in link ? (
                 <Link 
                   key={index} 
-                  to={link.path} 
+                  href={link.path} 
                   className={`flex items-center gap-1 transition-colors font-vt323 text-xl ${isLinkActive(link.path) ? 'text-primary' : 'text-foreground hover:text-primary'}`}
                 >
                   {/* no icons for desktop */}
@@ -385,7 +385,7 @@ const Navbar = () => {
                               </a>
                             ) : (
                               <Link 
-                                to={subLink.path} 
+                                href={subLink.path} 
                                 className={`flex items-center gap-1 px-2 py-2 cursor-pointer font-vt323 text-xl pixel-corners ${isLinkActive(subLink.path) ? 'text-primary bg-accent/50' : ''}`}
                                 onClick={() => setActiveDropdown(null)}
                               >
@@ -441,7 +441,7 @@ const Navbar = () => {
                 <div className="px-4 py-6 max-h-[calc(100%-60px)] overflow-auto">
                   <div className="flex items-center justify-between mb-6">
                     <Link 
-                      to="/" 
+                      href="/" 
                       className="flex items-center space-x-2 text-xl font-bold"
                       onClick={() => setIsDrawerOpen(false)} // Close drawer on logo click
                     >
@@ -457,7 +457,7 @@ const Navbar = () => {
                       'path' in link ? (
                         <Link 
                           key={index} 
-                          to={link.path} 
+                          href={link.path} 
                           className={`flex items-center gap-1 text-xl py-3 border-b border-border font-vt323 ${isLinkActive(link.path) ? 'text-primary' : ''}`}
                           onClick={() => setIsDrawerOpen(false)} // Close drawer on link click
                         >
@@ -503,7 +503,7 @@ const Navbar = () => {
                                 ) : (
                                   <Link 
                                     key={subIndex}
-                                    to={subLink.path}
+                                    href={subLink.path}
                                     className={`flex items-center space-x-3 py-2 font-vt323 text-xl ${isLinkActive(subLink.path) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                                     onClick={() => setIsDrawerOpen(false)} // Close drawer on sub-link click
                                   >
