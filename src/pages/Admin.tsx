@@ -1,6 +1,8 @@
+'use client';
+
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { Navigate } from 'react-router-dom';
+import { redirect } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Helmet } from 'react-helmet-async';
@@ -33,7 +35,7 @@ const Admin = () => {
   const isAuthorized = user && authorizedEmails.includes(user.email);
 
   if (!user || !isAuthorized) {
-    return <Navigate to="/" replace />;
+    redirect('/');
   }
 
   return (

@@ -1,6 +1,9 @@
 // @ts-nocheck
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { 
   ChevronDown, 
   Menu, 
@@ -89,7 +92,8 @@ function TagBadge({ label }: { label: string }) {
 }
 
 const Navbar = () => {
-  const location = useLocation();
+  const pathname = usePathname();
+  const location = { pathname };
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // Kept, but managed by Drawer now
   const [scrolled, setScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);

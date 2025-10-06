@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -5,7 +7,7 @@ import { BookOpen } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import DonateButton from '@/components/DonateButton';
 import { Helmet } from 'react-helmet-async';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 import GuideCardSkeleton from '@/components/skeletons/GuideCardSkeleton';
 
@@ -72,7 +74,7 @@ const Guides: Guide[] = [
 const GuidesPage = () => {
   const [guides, setGuides] = useState<Guide[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -91,7 +93,7 @@ const GuidesPage = () => {
 
   const handleOpenGuide = (guide: Guide) => {
     const slug = slugFromUrl(guide.markdownUrl);
-    navigate(`/guides/${slug}`);
+    router.push(`/guides/${slug}`);
   };
 
   const getDifficultyColor = (difficulty: string) => {

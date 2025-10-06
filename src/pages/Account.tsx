@@ -1,7 +1,10 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,7 +22,7 @@ import AccountPageSkeleton from '@/components/skeletons/AccountPageSkeleton';
 const Account = () => {
   const { user, loading, signOut } = useAuth();
   const { updateProfile, profile } = useProfile();
-  const navigate = useNavigate();
+  const router = useRouter();
   const [displayName, setDisplayName] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -66,7 +69,7 @@ const Account = () => {
   }
 
   if (!user) {
-    return <Navigate to="/" replace />;
+    redirect('/');
   }
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
