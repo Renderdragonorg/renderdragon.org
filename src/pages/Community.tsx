@@ -225,6 +225,13 @@ const defaultVideoCategories: VideoCategory[] = [
         "445K views",
       ),
       generateVideoData(
+        "o2hX3c3A5o8",
+        "How to Edit VIRAL Videos",
+        "ItsProger",
+        "10:26",
+        "25K views",
+      ),
+      generateVideoData(
         "rNJMh4lHxp4",
         "After Effects For Beginners 2025 | Everything You NEED to KNOW!",
         "Vince Opra",
