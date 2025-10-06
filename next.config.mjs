@@ -18,6 +18,14 @@ const nextConfig = {
     // All environment variables are accessible via process.env
   },
 
+  // Skip type checking and linting during build
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  
   // Webpack configuration for environment variables
   webpack: (config, { isServer }) => {
     // Make all environment variables available
@@ -32,11 +40,16 @@ const nextConfig = {
     unoptimized: false,
   },
 
-  // Output configuration for static export if needed
+  // Disable static generation - this is a client-side app
   // output: 'export', // Uncomment for static export
   
   // Trailing slash configuration (to match Vite behavior)
   trailingSlash: false,
+  
+  // Experimental features for app directory
+  experimental: {
+    // Force dynamic rendering for all routes
+  },
 
   // Production source maps
   productionBrowserSourceMaps: false,

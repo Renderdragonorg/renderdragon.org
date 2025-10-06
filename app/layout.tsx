@@ -13,6 +13,10 @@ import '@/global.css';
 import { ReactNode } from 'react';
 import Providers from './providers';
 
+// Force dynamic rendering for all pages
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+
 export const metadata: Metadata = {
   title: 'RenderDragon - Free Resources for Creators',
   description: 'The ultimate hub for creators. Find free resources for your next project, including music, sound effects, images, and more.',
